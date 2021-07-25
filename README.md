@@ -12,13 +12,7 @@
 - GMAIL: gmail of your facebook account
 - PASSWORD: password of your facebook account
 
-## How to use?
-
-**Facebook Page Crawler** requires **five** arguments:
-
-1. **app_id**: app_id of your Facebook app, the will used to access Facebook Graph API.
-2. **app_secret**: app_secret of your Facebook app, the will used to access Facebook Graph API.
-3. **targets**: The page name you want to crawl.
-4. **since**: The date you want to start the crawling.
-5. **until**: The date you want to finish the crawling.
-
+After clone this repository, use following command to install this module:
+```
+python setup.py develop
+```
