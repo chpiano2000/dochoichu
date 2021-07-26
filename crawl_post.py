@@ -7,8 +7,11 @@ import argparse
 import pandas as pd
 import time
 import sys, os
+import pdb
 
 ap = argparse.ArgumentParser()
+ap.add_argument("--post", help="the unique profile name")
+ap.add_argument("--group", type=int, help="provide a unique id of the group")
 ap.add_argument("-t", "--title", required=True, help="title of csv file")
 ap.add_argument("-n", "--number", type=int, default=3, help="number of post to crawl")
 ap.add_argument("-u", "--username", required=True, help="Gmail or username of your facebook account")
@@ -28,9 +31,12 @@ else:
     #you should use extDataDir as the path to your file Store_Codes.csv file
 
 fb_post = []
-
-for post in get_posts('dochoichu', pages=args["number"]):
-    fb_post.append(post)
+if args["post"]:
+    for post in get_posts(args['post'], pages=args["number"]):
+        fb_post.append(post)
+elif args["group"]:
+    for post in get_posts(args['group'], pages=args["number"], cookies="cookies.txt"):
+        fb_post.append(post)
 
 fb_post = pd.DataFrame(fb_post)
 fb_post = fb_post.drop(['post_text', 'shared_text', 'shared_text', 'image', 'video', 'video_thumbnail', 'video_id', 'shares', 'link', 'user_id', 'username', 'is_live', 'factcheck', 'shared_post_id', 'shared_time', 'shared_user_id', 'shared_username', 'shared_post_url', 'images', 'available'], axis=1)
