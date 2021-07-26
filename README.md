@@ -42,5 +42,6 @@ python3 crawl_post.py --group 154819686702568 -n 3 -t "thacauthinhchu.csv" -u "t
 ```
 ## Common isues
 1. Facebook will detect bot and you have to verify to login -> you should use another real facebook account or wait untill the next day 
+2. There will be some warning of the facebook-scraper -> ignore them and wait untill your code finishes runing
 ## get old data
 - run get_data.py to get old data stored in my mongodb atlas
