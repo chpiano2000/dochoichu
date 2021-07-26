@@ -6,11 +6,9 @@ from selenium.webdriver.firefox.options import Options
 import argparse
 import pandas as pd
 import time
-import sys, os
-import pdb
 
 ap = argparse.ArgumentParser()
-ap.add_argument("--post", help="the unique profile name")
+ap.add_argument("--page", help="the unique profile name")
 ap.add_argument("--group", type=int, help="provide a unique id of the group")
 ap.add_argument("-t", "--title", required=True, help="title of csv file")
 ap.add_argument("-n", "--number", type=int, default=3, help="number of post to crawl")
@@ -18,26 +16,16 @@ ap.add_argument("-u", "--username", required=True, help="Gmail or username of yo
 ap.add_argument("-p", "--password", required=True, help="password of your facebook account")
 args = vars(ap.parse_args())
 
-
-if getattr(sys, 'frozen', False):
-    # if you are running in a |PyInstaller| bundle
-    extDataDir = sys._MEIPASS
-    extDataDir  = os.path.join(extDataDir, '.env') 
-    #you should use extDataDir as the path to your file Store_Codes.csv file
-else:
-    # we are running in a normal Python environment
-    extDataDir = os.getcwd()
-    extDataDir = os.path.join(extDataDir, '.env') 
-    #you should use extDataDir as the path to your file Store_Codes.csv file
-
 fb_post = []
-if args["post"]:
-    for post in get_posts(args['post'], pages=args["number"]):
+
+if args["page"]: # option if you want to crawl PAGES
+    for post in get_posts(args['page'], pages=args["number"]):
         fb_post.append(post)
-elif args["group"]:
+elif args["group"]: # option if you want to crawl GROUP
     for post in get_posts(args['group'], pages=args["number"], cookies="cookies.txt"):
         fb_post.append(post)
 
+# Post process data
 fb_post = pd.DataFrame(fb_post)
 fb_post = fb_post.drop(['post_text', 'shared_text', 'shared_text', 'image', 'video', 'video_thumbnail', 'video_id', 'shares', 'link', 'user_id', 'username', 'is_live', 'factcheck', 'shared_post_id', 'shared_time', 'shared_user_id', 'shared_username', 'shared_post_url', 'images', 'available'], axis=1)
 fb_post = fb_post.drop(['video_size_MB', 'video_watches', 'video_width', 'likes'], axis=1)
@@ -45,13 +33,17 @@ fb_post = fb_post.drop(['image_lowquality', 'images_description', 'images_lowqua
 fb_post = fb_post.replace({'\n': ' '}, regex=True)
 fb_post = fb_post.rename(columns={"post_id":"_id"})
 
+# Get all of the posts' id to crawl reactions
 fb_id = []
 for i in fb_post['_id']:
     fb_id.append(i)
 
+# Use selenium web driver with firefox's driver and headless option
 options = Options()
 options.headless = True
 browser = webdriver.Firefox(executable_path="./geckodriver", options=options)
+
+# Login to facebook
 browser.get('https://m.facebook.com')
 txtUser = browser.find_element_by_id("m_login_email")
 txtUser.send_keys(args["username"])
@@ -59,6 +51,8 @@ txtPass = browser.find_element_by_id("m_login_password")
 txtPass.send_keys(args["password"])
 txtPass.send_keys(Keys.ENTER)
 time.sleep(2)
+
+# Crawl posts' reactions
 reactions = []
 for i in fb_id:
     browser.get('https://m.facebook.com/ufi/reaction/profile/browser/?ft_ent_identifier={}'.format(i))
@@ -112,24 +106,5 @@ for i in fb_id:
 reactions = pd.DataFrame(reactions)
 fb = pd.concat([fb_post, reactions], axis=1, join='inner')
 
+# convert DataFrame to csv file
 fb.to_csv(args["title"])
-
-# for post in fb.values.tolist():
-#     try:
-#         insert = {
-#             "_id": post[0],
-#             "text": post[1],
-#             "time": post[2],
-#             "comments": post[3],
-#             "post_url": post[4],
-#             "like": post[5],
-#             "love": post[6],
-#             "wow": post[7],
-#             "haha": post[8],
-#             "sad": post[9],
-#             "care": post[10]
-#         }
-#         db.dochoichu.insert_one(insert)
-#     except:
-#         if list(db.dochoichu.find({"_id": post[0]})) != []:
-#             pass
