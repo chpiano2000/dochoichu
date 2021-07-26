@@ -1,5 +1,9 @@
 # dochoichu
 
+## Introduction
+- This my first attempt trying to crawl facebook posts with reactions of pages and groups
+- I use [Go to the Support Web Site](https://support.west-wind.com)
+
 ## Usage
 1. **-t, --title**: Required. Name to export csv file
 2. **-n, --number**: Default is **3**. Number 3 correspond to 10 posts from the newest. after 3, for each plus 1, it corresponds to four posts
