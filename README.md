@@ -40,6 +40,7 @@ python3 crawl_post.py --page "dochoichu" -t "dochoichu.csv" -u "test@gmail.com" 
 ```
 python3 crawl_post.py --group 154819686702568 -n 3 -t "thacauthinhchu.csv" -u "test@gmail.com" -p "matkhaumanh"
 ```
-
+## Common isues
+1. Facebook will detect bot and you have to verify to login -> you should use another real facebook account or wait untill the next day 
 ## get old data
 - run get_data.py to get old data stored in my mongodb atlas
